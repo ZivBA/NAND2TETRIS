@@ -55,21 +55,25 @@ CHIP ALU {
 	// Now handling 'f'
 	And16(a=XOrZero, b=YOrZero, out=XAndY);  // bitwise and
 	Add16(a=XOrZero, b=YOrZero, out=XPlusY);  // integer 2's complement addition
-	Mux16(a=XAndY, b=XPlusY, sel=f, out=XOpY);
+	Mux16(a=XAndY, b=XPlusY, sel=f, out=Result);
 	
 	// Now handling negating output
-	Not16(in=XOpY, out=NotXOpY);  // Negating the current output
-	Mux16(a=XOpY, b=NotXOpY, sel=no, out=Result);  // Choosing current output according to the input 'no'
+	Not16(in=Result, out=NotResult);  // Negating the current output
+	Mux16(a=Result, b=NotResult, sel=no, out=out, out=FinalResult);  // Choosing current output according to the input 'no'
 	
-	// Now handing the extra output: 'zr'
-	And16(a=Result, b=true, out=ZrTemp);  // If Result==0 (false) hence Not False is True, so T&T==T
-	Or8Way(in=ZrTemp[0..7], out=FirstHalfZrResult);
-	Or8Way(in=ZrTemp[8..15], out=SecondHalfZrResult);
-	Or(a=FirstHalfZrResult, b=SecondHalfZrResult, out=zr);
+	// Negating the final result
+	Not16(in=FinalResult, out=NotFinalResult);
+	
+	// Now handling the extra output: 'zr'
+	// If FinalResult==0 (false) hence NotFinalResult is True, so T&T==T
+	And16(a=NotFinalResult, b[0..15]=true, out[0..7]=ZrResultFirstHalf, out[8..15]=ZrResultSecondHalf);
+	Or8Way(in=ZrResultFirstHalf, out=ZrOutputOne);
+	Or8Way(in=ZrResultSecondHalf, out=ZrOutputTwo);
+	Or(a=ZrOutputOne, b=ZrOutputTwo, out=zr);
 
-	// Now handing the extra output: 'ng'
-	And16(a=Result, b=true, out=NgTemp);  // Same idea, if Result<0 then Result==T so T&T==T
-	Or8Way(in=NgTemp[0..7], out=FirstHalfNgResult);
-	Or8Way(in=NgTemp[8..15], out=SecondHalfNgResult);
-	Or(a=FirstHalfNgResult, b=SecondHalfNgResult, out=ng);
+	// Now handling the extra output: 'ng'
+	And16(a=FinalResult, b[0..15]=true, out[0..7]=NgResultFirstHalf, out[8..15]=NgResultSecondHalf);
+	Or8Way(in=NgResultFirstHalf, out=NgOutputOne);
+	Or8Way(in=NgResultSecondHalf, out=NgOutputTwo);
+	Or(a=NgOutputOne, b=NgOutputTwo, out=ng);
 }
