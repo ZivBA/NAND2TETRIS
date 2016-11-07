@@ -1,0 +1,22 @@
+zivben,hivemind
+ziv ben aharon ID: 036853679
+ben asaf ID: 305432833
+Project 1: Elementary Logic Gates
+
+not.hdl 	- not gate
+and.hdl 	- and gate
+or.hdl  	- or gate
+xor.hdl 	- xor gate
+mux.hdl 	- mux gate
+dmux.hdl	- dmux gate
+not16.hdl	- 16-bit not
+and16.hdl	- 16 bit and
+or16.hdl	- 16 bit or
+mux16.hdl 	- 16 bit multiplexor
+or8way.hdl	- 8 way or gate
+mux4way16.hdl	- 16-bit/4-way mux
+mux8way16.hdl	- 16bit/8-way mux
+dmux4way.hdl	- 4-way demultiplexor
+dmux8way.hdl	- 8-way demultiplexor
+README		- this file
+
