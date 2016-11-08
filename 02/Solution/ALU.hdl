@@ -60,24 +60,17 @@ CHIP ALU {
 	
 	// Now handling negating output
 	Not16(in=Result, out=NotResult);  // Negating the current output
-	Mux16(a=Result, b=NotResult, sel=no, out=out, out=FinalResult, out[15]=IsResultNeg);  // Choosing current output according to the input 'no'
+	// Choosing current output according to the input 'no'
+	Mux16(a=Result, b=NotResult, sel=no, out=out, out[0..7]=FResultFirst, out[8..15]=FResultSecond, out[15]=IsResultNeg);  
 	
-	// Negating the final result
-	Not16(in=FinalResult, out=NotFinalResult);
-	
+	// DONE WITH 'out'. Now handling the 'zr' and 'ng'
+
 	// Now handling the extra output: 'zr'
-	// If FinalResult==0 (false) hence NotFinalResult is True, so T&T==T
-	And16(a=NotFinalResult, b=true, out[0..7]=ZrResultFirstHalf, out[8..15]=ZrResultSecondHalf);
-	Or8Way(in=ZrResultFirstHalf, out=ZrOutputOne);
-	Or8Way(in=ZrResultSecondHalf, out=ZrOutputTwo);
-	Or(a=ZrOutputOne, b=ZrOutputTwo, out=zr);
+	Or8Way(in=FResultFirst, out=ZrOutputOne);
+	Or8Way(in=FResultSecond, out=ZrOutputTwo);
+	Or(a=ZrOutputOne, b=ZrOutputTwo, out=ZrOutput);
+	Not(in=ZrOutput, out=zr);
 
-	// Now handling the extra output: 'ng'
-	//And16(a=FinalResult, b[0..15]=true, out[0..7]=NgResultFirstHalf, out[8..15]=NgResultSecondHalf);
-	//Or8Way(in=NgResultFirstHalf, out=NgOutputOne);
-	//Or8Way(in=NgResultSecondHalf, out=NgOutputTwo);
-	//Or(a=NgOutputOne, b=NgOutputTwo, out=ng);
-
-	// Now handling the extra output: 'ng'
+	// Now handling the extra output: 'ng' . Just checking if the Result is negative!
 	And(a=IsResultNeg, b=true, out=ng);
 }
