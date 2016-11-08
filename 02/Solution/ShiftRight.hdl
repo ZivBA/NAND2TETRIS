@@ -1,4 +1,4 @@
-CHIP ShiftLeft{
+CHIP ShiftRight{
      IN in[16];
      OUT out[16];
      
