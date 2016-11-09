@@ -3,4 +3,83 @@ CHIP Mul{
     OUT out[16];
 
     PARTS:
+    	// Will do long multiplication in Binary similar to Decimal
+    	//   A 
+    	//  xB
+    	// ------
+    	// We're going to shift the multiplicand A instead of the mid-results!
+    	// That is to avoid the many shifts!
+	    
+    	Xor(a=a[15], b=b[15], out=IsNegative);
+
+    	// If b[i] is 1 then it is identity function of Mux16's 'b' input, else the '0' function
+	    Mux16(a=false, b=a, sel=b[0], out=Mid1);  
+	    ShiftLeft(in=a, out=Shift1);
+	    
+	    Mux16(a=false, b=Shift1, sel=b[1], out=Mid2);
+	    ShiftLeft(in=Shift1, out=Shift2);
+	    
+	    Mux16(a=false, b=Shift2, sel=b[2], out=Mid3);
+	    ShiftLeft(in=Shift2, out=Shift3);
+	    
+	    Mux16(a=false, b=Shift3, sel=b[3], out=Mid4);
+	    ShiftLeft(in=Shift3, out=Shift4);
+	    
+	    Mux16(a=false, b=Shift4, sel=b[4], out=Mid5);
+	    ShiftLeft(in=Shift4, out=Shift5);
+	    
+	    Mux16(a=false, b=Shift5, sel=b[5], out=Mid6);
+	    ShiftLeft(in=Shift5, out=Shift6);
+	    
+	    Mux16(a=false, b=Shift6, sel=b[6], out=Mid7);
+	    ShiftLeft(in=Shift6, out=Shift7);
+	    
+	    Mux16(a=false, b=Shift7, sel=b[7], out=Mid8);
+	    ShiftLeft(in=Shift7, out=Shift8);
+	    
+	    Mux16(a=false, b=Shift8, sel=b[8], out=Mid9);
+	    ShiftLeft(in=Shift8, out=Shift9);
+	    
+	    Mux16(a=false, b=Shift9, sel=b[9], out=Mid10);
+	    ShiftLeft(in=Shift9, out=Shift10);
+	    
+	    Mux16(a=false, b=Shift10, sel=b[10], out=Mid11);
+	    ShiftLeft(in=Shift10, out=Shift11);
+	    
+	    Mux16(a=false, b=Shift11, sel=b[11], out=Mid12);
+	    ShiftLeft(in=Shift11, out=Shift12);
+	    
+	    Mux16(a=false, b=Shift12, sel=b[12], out=Mid13);
+	    ShiftLeft(in=Shift12, out=Shift13);
+	    
+	    Mux16(a=false, b=Shift13, sel=b[13], out=Mid14);
+	    ShiftLeft(in=Shift13, out=Shift14);
+	    
+	    Mux16(a=false, b=Shift14, sel=b[14], out=Mid15);
+	    ShiftLeft(in=Shift14, out=Shift15);
+	    
+	    Mux16(a=false, b=Shift15, sel=b[15], out=Mid16);
+	    
+	    // Summing up Pairs!
+	    Add16(a=Mid1, b=Mid2, out=A1);
+	    Add16(a=Mid3, b=Mid4, out=A2);
+	    Add16(a=Mid5, b=Mid6, out=A3);
+	    Add16(a=Mid7, b=Mid8, out=A4);
+	    Add16(a=Mid9, b=Mid10, out=A5);
+	    Add16(a=Mid11, b=Mid12, out=A6);
+	    Add16(a=Mid13, b=Mid14, out=A7);
+	    Add16(a=Mid15, b=Mid16, out=A8);
+	    // Summing up Pairs of Pairs!
+	    Add16(a=A1, b=A2, out=B1);
+	    Add16(a=A3, b=A4, out=B2);
+	    Add16(a=A5, b=A6, out=B3);
+	    Add16(a=A7, b=A8, out=B4);
+	    // Summing up Pairs of Pairs of Pairs!
+	    Add16(a=B1, b=B2, out=C1);
+	    Add16(a=B3, b=B4, out=C2);
+	    // And finally
+	    Add16(a=C1, b=C2, out=Result, out);
+
+	    Or(a=false, b=IsNegative, out=Result[15]);
+	    Or16(a=Result, b=Result, out=Result);
 }
