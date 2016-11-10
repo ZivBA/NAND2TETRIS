@@ -9,10 +9,8 @@ CHIP Mul{
     	// ------
     	// We're going to shift the multiplicand A instead of the mid-results!
     	// That is to avoid the many shifts!
-	    
-    	Xor(a=a[15], b=b[15], out=IsNegative);
-
     	// If b[i] is 1 then it is identity function of Mux16's 'b' input, else the '0' function
+	    
 	    Mux16(a=false, b=a, sel=b[0], out=Mid1);  
 	    ShiftLeft(in=a, out=Shift1);
 	    
@@ -78,8 +76,21 @@ CHIP Mul{
 	    Add16(a=B1, b=B2, out=C1);
 	    Add16(a=B3, b=B4, out=C2);
 	    // And finally
-	    Add16(a=C1, b=C2, out=Result, out);
+	    Add16(a=C1, b=C2, out[0..14]=Result);
 
-	    Or(a=false, b=IsNegative, out=Result[15]);
-	    Or16(a=Result, b=Result, out=Result);
+	    // Checking if either A or B is zero
+	    Or8Way(in=a[0..7], out=TempA1);
+		Or8Way(in=a[8..15], out=TempA2);
+		Or(a=TempA1, b=TempA2, out=IsAFalse);
+		Or8Way(in=b[0..7], out=TempB1);
+		Or8Way(in=b[8..15], out=TempB2);
+		Or(a=TempB1,b=TempB2,out=IsBFalse);
+    	And(a=IsAFalse, b=IsBFalse, out=IsThereZero);
+
+		// Determining the sign of the result of A*B
+    	Xor(a=a[15], b=b[15], out=IsNegative);
+
+
+    	// Outputing the final result, either zero or actual number
+	    Mux16(a=false, b[0..14]=Result, b[15]=IsNegative, sel=IsThereZero, out=out);
 }

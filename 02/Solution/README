@@ -10,9 +10,16 @@ Ben Asaf, ID 305432833, ben.asaf@mail.huji.ac.il
 
 Submitted Files
 ---------------
-README - This file.
-
+README 			- This file.
+Add16.hdl 		- Adds 2 16bit binary numbers
+ALU.hdl 		- Arithmetic Logic Unit chip
+FullAdder.hdl	- Adds 2 bits with carry
+HalfAdder.hdl 	- Adds 2 bits without carry
+Inc16.hdl		- Increment chip
+Mul.hdl			- Multiplies 2 binary numbers chip
+ShiftLeft.hdl	- Shifts a binary number one bit to the left. Or multiplies by two.
+ShiftRight.hdl	- Shifts a binary number one bit to the right. Or divides by two.
 
 Remarks
 -------
-* The chip was actually implemented by simply using an Or chip. cool!
+* null
