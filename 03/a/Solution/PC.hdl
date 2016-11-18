@@ -16,5 +16,18 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+	    Inc16(in=PrevOutput, out=IncrementedPrevOutput);  // Incrementing the previous output in-case user wants to Inc
+
+	    // We will now operate on the previous output and finally load it into a Register so it will output it at the next cycle!
+
+	    // If inc==1, Save the Incremented previous input into the register and output it at the next cycle. Else bypass the previous output.
+	    Mux16(a=PrevOutput, b=IncrementedPrevOutput, sel=inc, out=Transform0);
+	    // If load==1, Save the current input into the register and output it at the next cycle. Else use prev transform
+	    Mux16(a=Transform0, b=in, sel=load, out=Transform1);
+	    // If reset==1, Save the reset output into the register and output it at the next cycle. Else just bypass the input 'a'
+	    Mux16(a=Transform1, b=false, sel=reset, out=Final);  
+
+	    // the output from the register also needs to get fed back through 
+	    // the combinational logic to get processed for the next IncrementedPrevOutput cycle.
+	    Register(in=Final, load=true, out=PrevOutput, out=out);
 }
