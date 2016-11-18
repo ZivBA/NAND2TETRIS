@@ -1,0 +1,26 @@
+zivben, hivemind
+===============================================================================
+Ziv Ben-Aharon, ID 036853679, ziv.benaharon1@mail.huji.ac.il
+Ben Asaf, ID 305432833, ben.asaf@mail.huji.ac.il
+===============================================================================
+
+                           Project 3 - Sequential Logic
+                           ------------------------------
+  
+
+Submitted Files
+---------------
+README 			- This file.
+a/PC.hdl		- Program counter
+a/Bit.hdl		- 1 bit memory
+a/Register.hdl	- 1 byte memory
+a/RAM8.hdl		- 8 bytes memory
+a/RAM64.hdl		- 64 bytes memory
+b/RAM512.hdl	- 512 bytes memory
+b/RAM4K.hdl		- 4K bytes memory
+b/RAM16k.hdl	- 16k bytes memory
+
+
+Remarks
+-------
+* null
