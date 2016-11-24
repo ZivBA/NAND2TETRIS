@@ -21,6 +21,14 @@
  * memory map. The behavior in these addresses is described in the 
  * Screen and Keyboard chip specifications given in the book.
  */
+ //  8000 = 001111101000000
+ // 16383 = 011111111111111
+ // 16384 = 100000000000000
+ // 20480 = 101000000000000
+ // 24575 = 101111111111111
+ // 24576 = 110000000000000
+
+
 
 CHIP Memory {
     IN in[16], load, address[15];
@@ -28,4 +36,11 @@ CHIP Memory {
 
     PARTS:
     // Put your code here:
+    DMux4Way(in=load, sel=address[13..14], a=loadRAM1, b=loadRAM2, c=loadSCR, d=loadKBD);
+	Or(a=loadRAM1, b=loadRAM2, out=loadRAM);
+	RAM16K(in=in, load=loadRAM, out=outRAM, address=address[0..13]);
+	Screen(in=in, load=loadSCR, out=outSCR, address=address[0..12]);
+	Keyboard(out=outKBD);
+	Mux4Way16(a=outRAM, b=outRAM, c=outSCR, d=outKBD, sel=address[13..14], out=out);    
+
 }
