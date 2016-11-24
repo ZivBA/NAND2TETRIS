@@ -39,5 +39,33 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+        Or(a=instruction[3], b=false, out=writeM);
+
+        
+        Mux16(a=instruction, b=ALUOutput, sel=??, out=SelectedInstruct);
+        // Possible problem: addressM is 15bit long, sub-the-bus-fuck it
+        Register(in=SelectedInstruct, load=instruction[5], out[0..15]=addressM, out=ARegister);
+
+        Mux16(a=CurInstruct, b=inM, sel=??, out=CurMemory);
+        Register(in=ALUOut, load=instruction[4], out=DRegister);
+        ALU(x=DRegister, y=CurMemory, zx=instruction[6], nx=instruction[7],
+                                    zy=instruction[8], ny=instruction[9],
+                                    f=instruction[10], no=instruction[11],
+                                    out=ALUOutput, out=outM,
+                                    zr=ALUzr, ng=ALUng);
+
+        // If:  The Jump Bits (instruction[0..2]) are 111 then it's an UNCONDITIONAL JUMP!
+        //      So PC load bit receieves 1!
+        // Else if: The Jump Bits are 0, (No jump instruction)
+        //          Then increment PC!
+
+        // Defining the PCLoadBit
+        And(a=instruction[0], b=instruction[1], out=Temp1);
+        And(a=Temp1, b=instruction[2], out=PCLoadBit);
+        // Defining the PC Inc Bit.
+        Or8Way(in[0..2]=instruction[0..2], in[3..7]=false ,out=Temp2);
+        Not(in=Temp2, out=PCIncBit);
+        ///////////////////////////////////////////////////////////////////////////////////
+        // Possible problem: pc is 15bit long, sub-the-bus-fuck it
+        PC(in=ARegister, load=PCLoadBit, inc=PCIncBit, reset=reset, out[0..15]=pc);
 }
