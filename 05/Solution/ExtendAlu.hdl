@@ -16,5 +16,33 @@ CHIP ExtendAlu{
      OUT out[16],zr,ng;
      
      PARTS:
-        
+        // Pre-processing all possible outputs:
+        ALU(x=x, y=y, zx=instruction[5],nx=instruction[4],
+        			zy=instruction[3], ny=instruction[2],
+        			f=instruction[1], no=instruction[0],
+        			out=ALUOut, zr=ALUzr, ng=ALUng);
+		Mul(a=x, b=y, out=XMultY);
+		ShiftRight(in=y, out=YRightShifted);
+		ShiftLeft(in=y, out=YLeftShifted);
+		ShiftRight(in=x, out=XRightShifted);
+		ShiftLeft(in=x, out=XLeftShifted);
+		/////////////////////////////////////////////
+		
+		// If instruction[8] == 0 then we need to decide which of the SHIFTED modifications of x,y we wish to output:
+		Mux4Way16(a=YRightShifted,b=XRightShifted,c=YLeftShifted,d=XLeftShifted,sel=instruction[4..5],out=ShiftedOutput);
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		// Deciding which output now to route OUTSIDE.
+		// We also output the 'ng' bit from index [15], which indicates if the result is NEGATIVE
+		// We also split the result into two parts to check if the result equals ZERO.
+		Mux4Way16(a=false, b=ShiftedOutput, c=XMultY, d=ALUOut, sel=instruction[7..8],
+					out[0..7]=ResultPart1, out[8..15]=ResultPart2, out[15]=ng, out=out);
+		//////////////////////////////////////////////////////////////////////////////////////////
+		
+		// Handling zr:
+		Or8Way(in=ResultPart1, out=IsZero1);
+		Or8Way(in=ResultPart2, out=IsZero2);
+		Or(a=IsZero1, b=IsZero2, out=IsResultEQZero);
+		Not(in=IsResultEQZero, out=zr);
+		/////////////////
 }
