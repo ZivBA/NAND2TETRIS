@@ -1,5 +1,3 @@
-// http://stackoverflow.com/questions/5386377/division-without-using
-
 // Calculate (R13-R14) and assign result to D
 @R14
 D=M
