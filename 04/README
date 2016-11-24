@@ -1,0 +1,21 @@
+zivben, hivemind
+===============================================================================
+Ziv Ben-Aharon, ID 036853679, ziv.benaharon1@mail.huji.ac.il
+Ben Asaf, ID 305432833, ben.asaf@mail.huji.ac.il
+===============================================================================
+
+                    Project 4 - Machine Language Programming
+                    ----------------------------------------
+  
+
+Submitted Files
+---------------
+README 				- This file.
+divide/Divide.asm	- Divide two numbers (log(n) complexity)
+fill/Fill.asm 		- Blacken the screen when pressing key, clear when not.
+mult/Mult.asm 		- Multiply two numbers.
+sort/Sort.asm 		- Sort an array of length (R15) starting at (R14)
+
+Remarks
+-------
+* null
