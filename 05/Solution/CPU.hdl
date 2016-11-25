@@ -29,55 +29,65 @@ CHIP CPU {
 
     IN  inM[16],         // M value input  (M = contents of RAM[A])
         instruction[16], // Instruction for execution
-        reset;           // Signals whether to re-start the current program
-                         // (reset == 1) or continue executing the current
-                         // program (reset == 0).
+        reset;           // Signals whether to re-start the current
+  // program (reset==1) or continue executing
+  // the current program (reset==0).
 
     OUT outM[16],        // M value output
-        writeM,          // Write into M? 
-        addressM[15],    // RAM address (of M)
-        pc[15];          // ROM address (of next instruction)
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
 
     PARTS:
-    // First define type of instructions and output 'writeM':
-    Not(in=instruction[15], out=AInst);
-    Not(in=AInst, out=CInst);
-    And(a=CInst, b=instruction[3], out=writeM);  // Setting 'writeM' output!
-    //////////////////////////////////////////////////////////
+        // Initializing stuff:
+        And16(a=instruction, b=true, out[0]=j3, out[1]=j2, out[2]=j1, out[3]=d3, out[4]=d2, out[5]=d1,
+                       out[6]=c6, out[7]=c5, out[8]=c4, out[9]=c3, out[10]=c2, out[11]=c1,
+                       out[12]=IsAddrOp, out[15]=OpCode, out[0..14]=null);
+        DMux(in=true, sel=OpCode, a=AInst, b=CInst);  // Define A or C instruction
+////////////////////////////////////////////////////////////////
 
-    And(a=CInst, b=instruction[5], out=MuxAReg);    // C-inst and dest to A-reg?
-    Mux16(a=instruction, b=ALUout, sel=MuxAReg, out=InsOrALU);
-    
-    Or(a=AInst, b=MuxAReg, out=LoadAReg);    // If (A-Inst) or (C-Inst and 'd1' load bit) then Load to A-Register
-    ARegister(in=InsOrALU, load=LoadAReg, out=ARegOut);
-    
-    Mux16(a=ARegOut, b=inM, sel=instruction[12], out=MuxALU);   // Select Addr or Mem according to the Instruction type
+        // Related to A-Register:
+        And(a=CInst, b=d1, out=MuxAReg);    // Selection of Mux is 1 if C-Instruction and 'd1' bit
+        Or(a=AInst, b=MuxAReg, out=LoadAReg);    // If (A-Inst) or (C-Inst and 'd1' load bit) then Load to A-Register
+        Mux16(a=instruction, b=ALUout, sel=OpCode, out=InstOrALU);
+        ARegister(in=InstOrALU, load=LoadAReg, out=ARegOut);
+//////////////////////////////////////////////////////////////////
 
-    And(a=CInst, b=instruction[4], out=LoadDReg);   // If C-Instruction and 'd2' load bit then Load D-Register
-    DRegister(in=ALUout, load=LoadDReg, out=DRegOut);    // load the D-Register from ALU
-    
-    ALU(x=DRegOut, y=MuxALU, zx=instruction[11], nx=instruction[10], 
-                            zy=instruction[9], ny=instruction[8],
-                            f=instruction[7], no=instruction[6],
-                            out=ALUout, zr=ALUzr, ng=ALUng);
+        // Related to ALU:
+        ALU(x=DRegOut, y=MuxALU, zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6,
+            out=ALUout, zr=ALUzr, ng=ALUng);
+//////////////////////////////////////////////////////////////////
+
+        // Related to D-Register:
+        Mux16(a=ARegOut, b=inM, sel=IsAddrOp, out=MuxALU);   // Select Addr or Mem according to the Instruction type
+        And(a=CInst, b=d2, out=LoadDReg);   // If C-Instruction and 'd2' load bit then Load D-Register
+        DRegister(in=ALUout, load=LoadDReg, out=DRegOut);    // load the D-Register from ALU
+//////////////////////////////////////////////////////////////////
+
+        // Routing CPU chip outputs:
+        Or16(a=false, b=ARegOut, out[0..14]=addressM);
+        Or16(a=false, b=ALUout, out=outM);
+        And(a=CInst, b=d3, out=writeM);
+//////////////////////////////////////////////////////////////////
+
+        // Now handling JUMP conditions, deciding if either to Increment PC or Load ARegOut into PC.
+        // Reminder:
+        //      if j1==1 then jump condition is: out<0
+        //      if j2==1 then jump condition is: out==0
+        //      if j3==1 then jump condition is: out>0
+        // We will check if jump conditions is met using the ALU outputs.
+        And(a=j1, b=ALUng, out=IsJLT);  // If JLT and ALU output is neg
+        And(a=j2, b=ALUzr, out=IsJEQ);  // If JEQ and ALU output is zero
+        Or(a=ALUzr, b=ALUng, out=zrORng);  // Is ALU output zero or negative?
+        Not(in=zrORng, out=NotZeroOrNeg);  // Negate
+        And(a=NotZeroOrNeg, b=j3, out=IsJGT);  // If JGT and ALU out Greater than 0 then JGT! 
+        Or(a=IsJLT, b=IsJEQ, out=IsJLE);  // If either JLT or JEQ then JLE
+        Or(a=IsJLE, b=IsJGT, out=JumpCond);  // If either JLE or JGT then load A-Reg to PC
         
-    // Routing CPU chip outputs:
-    Or16(a=false, b=ARegOut, out[0..14]=addressM);
-    Or16(a=false, b=ALUout, out=outM);
+        And(a=CInst, b=JumpCond, out=PCload);   // Jump only if condition is met and C-Instruction
 
-    // Now handling JUMP conditions, deciding if to Increment PC or Load ARegOut into PC:
-    And(a=ALUzr, b=instruction[1], out=JEQ);    // If zero and jump then JEQ
-    And(a=ALUng, b=instruction[2], out=JLT);    // If negative and jump then JLT
-    Or(a=ALUzr, b=ALUng, out=ZeroOrNegative);
-    Not(in=ZeroOrNegative, out=Positive);       // If positive, meaning not zero and not negative
-    And(a=Positive, b=instruction[0], out=JGT); // If positive and jump then JGT
-    // Checking jump which jump conditions:
-    Or(a=JEQ, b=JLT, out=JLE);
-    Or(a=JLE, b=JGT, out=jumpToA);              // Load PC if conditions are met
-    // Handling PC load and PC Increment:
-    And(a=CInst, b=jumpToA, out=PCload);        // If C-Instruction then JUMP only
-    Not(in=PCload, out=PCinc);                  // If not loading then Increment PC
+        Not(in=PCload, out=PCinc);  // If not loading then Increment, not both!
 
-    PC(in=ARegOut, inc=PCinc, load=PCload, reset=reset, out[0..14]=pc);
-    ///////////////////////////////////////////////////////////////////////////////////////
+        // Last output, PC:
+        PC(in=ARegOut, inc=PCinc, load=PCload, reset=reset, out[0..14]=pc);
 }
