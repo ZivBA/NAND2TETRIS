@@ -16,6 +16,10 @@ def TranslateAIns(asmList, labelsDict):
             if (match.group(2) in labelsDict.keys()):
                 newList.append(
                     format(int(labelsDict[match.group(2)]), '016b'))
+            elif (match.group(2) in addressDict.keys):
+                newList.append(
+                    format(int(addressDict[match.group(2)]), '016b'))
+
             else:
                 try:
                     newList.append(format(int(match.group(2)), '016b'))
