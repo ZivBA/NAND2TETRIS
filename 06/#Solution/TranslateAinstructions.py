@@ -30,7 +30,7 @@ def TranslateAIns(asmList, labelsDict):
 
 
 def AddKeyToDict(key, addressDict):
-    for i in range(16, 16384):
+    for i in range(15, 16384):
         if i not in addressDict.values():
             addressDict[key] = i
             return i, addressDict
