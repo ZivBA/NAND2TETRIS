@@ -16,7 +16,7 @@ def PreprocessFile(file):
 	for line in file:
 		if (line == "\n"):  # If an empty line --> Skip it.
 			continue
-		elif (RE_COMMENT_LINE.match(line)):
+		elif (RE_COMMENT_LINE.match(line)):  # If comment line --> Skip it
 			continue
 		m2 = RE_INLINE_COMMENT.search(line)
 		if (m2):

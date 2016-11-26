@@ -1,6 +1,5 @@
 import re
 
-
 regex = "([AMD0]*)(=?)([AMD+-1!0&|]*)(;?)(.*)"
 
 rg = re.compile(regex, re.IGNORECASE | re.DOTALL)
@@ -33,11 +32,11 @@ def TranslateCIns(asmList):
             if (line.startswith('0') and line[1].isdigit()):
                 newList.append(line)
                 continue
-            elif(match.group(2)):
+            elif (match.group(2)):
                 if (match.group(3) in compADict.keys()):
                     instruction += '0'
                     instruction += compADict[match.group(3)]
-                elif (match.group(3) in compADict.keys()):
+                elif (match.group(3) in compMDict.keys()):
                     instruction += '1'
                     instruction += compMDict[match.group(3)]
                 destEntry = destDict[match.group(1)]
@@ -56,6 +55,7 @@ def TranslateCIns(asmList):
             else:
                 instruction += jumpDict['null']
             newList.append(instruction)
+
         else:
             newList.append(line)
     return newList
