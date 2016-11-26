@@ -13,7 +13,7 @@ newFile = []
 
 
 def BuildSymbolTable(asmFile):
-    linesRemoved = -1
+    linesRemoved = 0
     for idx, line in enumerate(asmFile):
         match = rg.search(line)
         if match:
