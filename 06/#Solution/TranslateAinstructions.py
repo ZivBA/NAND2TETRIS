@@ -20,7 +20,8 @@ def TranslateAIns(asmList, labelsDict):
                 try:
                     newList.append(format(int(match.group(2)), '016b'))
                 except(Exception):
-                    address, addressDict = AddKeyToDict(match.group(2), addressDict)
+                    address, addressDict = AddKeyToDict(
+                        match.group(2), addressDict)
                     newList.append(format(int(address), '016b'))
 
         else:
