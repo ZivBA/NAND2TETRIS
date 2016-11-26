@@ -31,25 +31,21 @@ def TranslateCIns(asmList):
         if match:
             instruction = '111'
             if(match.group(2)):
-                compAEntry = compADict[match.group(3)]
-                compMEntry = compMDict[match.group(3)]
-                if (compAEntry):
+                if (match.group(3) in compADict.keys()):
                     instruction += '0'
-                    instruction += compAEntry
-                elif (compMEntry):
+                    instruction += compADict[match.group(3)]
+                elif (match.group(3) in compADict.keys()):
                     instruction += '1'
-                    instruction += compMEntry
+                    instruction += compMDict[match.group(3)]
                 destEntry = destDict[match.group(1)]
                 instruction += destEntry
             else:
-                compAEntry = compADict[match.group(1)]
-                compMEntry = compMDict[match.group(1)]
-                if (compAEntry):
+                if (match.group(1) in compADict.keys()):
                     instruction += '0'
-                    instruction += compAEntry
-                elif (compMEntry):
+                    instruction += compADict[match.group(1)]
+                elif (match.group(1) in compMDict.keys()):
                     instruction += '1'
-                    instruction += compMEntry
+                    instruction += compMDict[match.group(1)]
                 instruction += destEntry['null']
             if (match.group(4)):
                 jumpEntry = jumpDict[match.group(5)]
