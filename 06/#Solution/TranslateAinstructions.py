@@ -8,6 +8,8 @@ rg = re.compile(re1 + re2, re.IGNORECASE | re.DOTALL)
 
 
 def TranslateAIns(asmList, addressDict):
+    if (not addressDict):
+        addressDict = {'null': 'null'}
     newList = []
     for line in asmList:
         match = rg.search(line)
