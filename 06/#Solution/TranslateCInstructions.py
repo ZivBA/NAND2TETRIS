@@ -30,7 +30,9 @@ def TranslateCIns(asmList):
         match = rg.search(line)
         if match:
             instruction = '111'
-            if(match.group(2)):
+            if (line.startsWith('0') and line[1].isDigit()):
+                newList.append(line)
+            elif(match.group(2)):
                 if (match.group(3) in compADict.keys()):
                     instruction += '0'
                     instruction += compADict[match.group(3)]
