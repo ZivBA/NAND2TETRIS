@@ -3,11 +3,14 @@ import sys
 
 
 def main(argv):
-	print("Number of args: " + str(len(argv)))
-	print("The arguments: " + str(argv))
-	FILE = open(argv[1], mode="r+")
-	Parser.RemoveWhiteSpaces(FILE)
+	FILE = open(argv[1], mode="r")
+	CONTENT = Parser.PreprocessFile(FILE)
 	FILE.close()
+	PrintContent(CONTENT)
+
+def PrintContent(CONTENT):
+	for x in CONTENT:
+		print(x)
 
 
 main(sys.argv)
