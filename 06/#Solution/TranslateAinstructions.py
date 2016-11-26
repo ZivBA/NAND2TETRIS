@@ -11,12 +11,26 @@ def TranslateAIns(asmList, addressDict):
     newList = []
     for line in asmList:
         match = rg.search(line)
-        if match.group(1):
+        if match and match.group(1):
             if (match.group(2) in addressDict.keys()):
                 newList.append(
                     format(int(addressDict[match.group(2)]), '016b'))
             else:
-                newList.append(format(int(match.group(2)), '016b'))
+                try:
+                    newList.append(format(int(match.group(2)), '016b'))
+                except(Exception):
+                    address, addressDict = AddKeyToDict(
+                        match.group(2), addressDict)
+                    newList.append(format(int(address), '016b'))
+
         else:
             newList.append(line)
     return newList
+
+
+def AddKeyToDict(key, addressDict):
+    for i in range(15, 16384):
+        if i not in addressDict.values():
+            addressDict[key] = i
+            break
+    return i, addressDict
