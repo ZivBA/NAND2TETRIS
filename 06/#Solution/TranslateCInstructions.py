@@ -30,8 +30,9 @@ def TranslateCIns(asmList):
         match = rg.search(line)
         if match:
             instruction = '111'
-            if (line.startsWith('0') and line[1].isDigit()):
+            if (line.startswith('0') and line[1].isdigit()):
                 newList.append(line)
+                continue
             elif(match.group(2)):
                 if (match.group(3) in compADict.keys()):
                     instruction += '0'
@@ -48,12 +49,13 @@ def TranslateCIns(asmList):
                 elif (match.group(1) in compMDict.keys()):
                     instruction += '1'
                     instruction += compMDict[match.group(1)]
-                instruction += destEntry['null']
+                instruction += destDict['null']
             if (match.group(4)):
                 jumpEntry = jumpDict[match.group(5)]
                 instruction += jumpEntry
             else:
                 instruction += jumpDict['null']
+            newList.append(instruction)
         else:
             newList.append(line)
     return newList
