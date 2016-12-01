@@ -4,7 +4,7 @@ Ziv Ben-Aharon, ID 036853679, ziv.benaharon1@mail.huji.ac.il
 Ben Asaf, ID 305432833, ben.asaf@mail.huji.ac.il
 ===============================================================================
 
-                    Project 5 - Computer Architecture
+                             Project 6 - Assembler
                     ----------------------------------------
   
 
@@ -15,6 +15,8 @@ Main.py						- Main driver file
 Parser.py					- Pre-proccesses '.asm' file
 TranslateAinstructions.py 	- Translates to A Instructions
 TranslateCinstructions.py	- Translates to C Instructions
+Assembler                   - A CSH wrapper script to run the python Main file
+Makefile                    - An empty makefile pre exercise requirements
 
 
 Remarks
