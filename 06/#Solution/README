@@ -10,12 +10,12 @@ Ben Asaf, ID 305432833, ben.asaf@mail.huji.ac.il
 
 Submitted Files
 ---------------
-README 				- This file.
-Computer.hdl		- Computer chip that wraps CPU,Memory and ROM32K
-CPU.hdl				- The main processing unit
-CpuMul.hdl			- Variation of CPU with multiplication
-ExtendedAlu.hdl		- Extended Arithmetic Logic Unit
-Memory.hdl			- Chip that handles the memory of Keyboard,Screen and RAM16K
+README 						- This file.
+Main.py						- Main driver file
+Parser.py					- Pre-proccesses '.asm' file
+TranslateAinstructions.py 	- Translates to A Instructions
+TranslateCinstructions.py	- Translates to C Instructions
+
 
 Remarks
 -------
