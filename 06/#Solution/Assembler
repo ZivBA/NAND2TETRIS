@@ -1,0 +1,15 @@
+#!/bin/csh -f
+
+# wrapper script to run the HACK assembler program.
+
+if ($#argv != 1) then
+    echo "Usage: Assembler <input folder>"
+    echo "translates all .asm files in folder to hack files"
+    goto done
+endif
+
+set inputDir=$1
+python Main.py $inputDir
+
+done:
+    exit 0
